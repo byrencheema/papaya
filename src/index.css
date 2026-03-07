@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: #141218;
+  --color-foreground: #E6E0E9;
+  --color-card: #211F26;
+  --color-card-foreground: #E6E0E9;
+  --color-popover: #2B2930;
+  --color-popover-foreground: #E6E0E9;
+  --color-primary: #D0BCFF;
+  --color-primary-foreground: #381E72;
+  --color-secondary: #4A4458;
+  --color-secondary-foreground: #E8DEF8;
+  --color-muted: #36343B;
+  --color-muted-foreground: #CAC4D0;
+  --color-accent: #4A4458;
+  --color-accent-foreground: #E8DEF8;
+  --color-destructive: #F2B8B5;
+  --color-destructive-foreground: #601410;
+  --color-border: #49454F;
+  --color-input: #49454F;
+  --color-ring: #D0BCFF;
+
+  --color-surface-lowest: #0F0D13;
+  --color-surface-low: #1D1B20;
+  --color-surface: #211F26;
+  --color-surface-high: #2B2930;
+  --color-surface-highest: #36343B;
+
+  --color-tertiary: #EFB8C8;
+  --color-tertiary-foreground: #492532;
+  --color-on-surface-variant: #CAC4D0;
+  --color-outline: #938F99;
+  --color-outline-variant: #49454F;
+
+  --color-success: #A8DAB5;
+  --color-success-foreground: #0D3B1C;
+
+  --color-chart-1: #D0BCFF;
+  --color-chart-2: #A8DAB5;
+  --color-chart-3: #7DC4E4;
+  --color-chart-4: #EFB8C8;
+  --color-chart-5: #F2D679;
+  --color-sidebar: #0F0D13;
+  --color-sidebar-foreground: #E6E0E9;
+  --color-sidebar-primary: #D0BCFF;
+  --color-sidebar-primary-foreground: #381E72;
+  --color-sidebar-accent: #4A4458;
+  --color-sidebar-accent-foreground: #E8DEF8;
+  --color-sidebar-border: #49454F;
+  --color-sidebar-ring: #D0BCFF;
+
+  --radius: 0.75rem;
+
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-standard-decel: cubic-bezier(0, 0, 0, 1);
+  --ease-standard-accel: cubic-bezier(0.3, 0, 1, 1);
+  --ease-emphasized-decel: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-emphasized-accel: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  --duration-short1: 50ms;
+  --duration-short2: 100ms;
+  --duration-short3: 150ms;
+  --duration-short4: 200ms;
+  --duration-medium1: 250ms;
+  --duration-medium2: 300ms;
+  --duration-medium3: 350ms;
+  --duration-medium4: 400ms;
+  --duration-long1: 450ms;
+  --duration-long2: 500ms;
+
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+  --shadow-2: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+  --shadow-3: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  margin: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
