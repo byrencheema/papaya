@@ -38,7 +38,7 @@ export function BinPanel() {
           ))}
         </div>
         {assets.length === 0 && (
-          <div className="flex flex-col items-center gap-4 px-6 pb-6 pt-8 text-center">
+          <div className="flex flex-col items-center gap-4 px-6 pb-6 text-center" style={{ marginTop: "45%" }}>
             <p className="text-xs text-muted-foreground">Import media to get started</p>
             <div className="flex flex-col gap-2 w-full max-w-[180px]">
               <Button

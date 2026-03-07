@@ -137,6 +137,31 @@ export async function extractSingleFrame(path: string, atMs: number): Promise<Bu
   return Buffer.from(raw);
 }
 
+export async function extractAudio(
+  inputPath: string,
+  startMs?: number,
+  endMs?: number,
+): Promise<Buffer> {
+  const args: string[] = ["ffmpeg"];
+  if (startMs !== undefined) {
+    args.push("-ss", (startMs / 1000).toFixed(3));
+  }
+  if (startMs !== undefined && endMs !== undefined) {
+    args.push("-t", ((endMs - startMs) / 1000).toFixed(3));
+  }
+  args.push("-i", inputPath, "-ar", "16000", "-ac", "1", "-f", "wav", "pipe:1");
+
+  const proc = Bun.spawn(args, { stdout: "pipe", stderr: "pipe" });
+  const raw = await new Response(proc.stdout).arrayBuffer();
+  const exitCode = await proc.exited;
+  if (exitCode !== 0) {
+    const errText = await new Response(proc.stderr).text();
+    throw new Error(`ffmpeg extractAudio failed: ${errText}`);
+  }
+
+  return Buffer.from(raw);
+}
+
 export async function exportVideo(
   inputPaths: string[],
   outPath: string,

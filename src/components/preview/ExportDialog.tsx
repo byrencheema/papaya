@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useProjectStore } from "@/stores/project-store";
 import { useToastStore } from "@/stores/toast-store";
+import { compositionManager } from "@/lib/composition-manager";
 
 interface ExportDialogProps {
   open: boolean;
@@ -30,39 +31,23 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
     setProgress(0);
 
     try {
-      const res = await fetch("/api/export", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId: project.id }),
+      const result = await compositionManager.export((p) => {
+        setProgress(Math.round((p.progress / p.total) * 100));
       });
 
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err || `Export failed (${res.status})`);
-      }
-
-      const contentType = res.headers.get("content-type") ?? "";
-      if (contentType.includes("application/json")) {
-        const body = await res.json() as { url?: string };
-        if (body.url) {
-          const link = document.createElement("a");
-          link.href = body.url;
-          link.download = `${project.name}.mp4`;
-          link.click();
-        }
-      } else {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+      if (result.type === "success" && result.data) {
+        const url = URL.createObjectURL(result.data);
         const link = document.createElement("a");
         link.href = url;
         link.download = `${project.name}.mp4`;
         link.click();
         URL.revokeObjectURL(url);
+        setProgress(100);
+        addToast("Export complete!", "success");
+        onOpenChange(false);
+      } else if (result.type === "error") {
+        throw result.error;
       }
-
-      setProgress(100);
-      addToast("Export complete!", "success");
-      onOpenChange(false);
     } catch (e) {
       addToast((e as Error).message, "error");
     } finally {
@@ -103,7 +88,7 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                 />
               </div>
               <span className="text-xs text-muted-foreground text-center">
-                {progress < 100 ? "Exporting..." : "Done!"}
+                {progress < 100 ? `Exporting... ${progress}%` : "Done!"}
               </span>
             </div>
           )}

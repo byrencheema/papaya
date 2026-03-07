@@ -54,30 +54,36 @@ export function ChatMessage({ message }: ChatMessageProps) {
     <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+          "max-w-[88%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed",
           isUser
-            ? "bg-primary text-primary-foreground rounded-br-md"
-            : "bg-surface text-foreground rounded-bl-md"
+            ? "bg-primary text-primary-foreground"
+            : "bg-surface text-foreground"
         )}
       >
         {message.status === "streaming" && !message.content && !message.statusText && (
-          <div className="flex items-center gap-1.5 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+          <div className="flex items-center gap-1.5 py-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:0ms]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:120ms]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-bounce [animation-delay:240ms]" />
           </div>
         )}
         {displayContent && (
           <p className="whitespace-pre-wrap">{displayContent}</p>
         )}
         {message.statusText && (
-          <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
-            <div className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-primary border-t-transparent" />
+          <div
+            className="flex items-center gap-2 mt-1 text-xs text-muted-foreground"
+            style={{ animation: "step-in 0.15s ease-out" }}
+          >
+            <span
+              className="inline-block h-1.5 w-1.5 rounded-full bg-primary shrink-0"
+              style={{ animation: "status-pulse 1s ease-in-out infinite" }}
+            />
             {message.statusText}
           </div>
         )}
         {message.status === "error" && (
-          <p className="text-destructive text-xs mt-1.5">Error occurred</p>
+          <p className="text-destructive text-xs mt-1.5">Something went wrong.</p>
         )}
         {message.diff && (
           <PlanCard plan={message.plan} diff={message.diff} />

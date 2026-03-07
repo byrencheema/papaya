@@ -4,11 +4,12 @@ import { v4 as uuid } from "uuid";
 import { join } from "path";
 import type { TimelineDiff, Asset } from "../../shared/types.ts";
 import * as store from "./project-store.ts";
-import { extractFrames, extractSingleFrame, thumbnail } from "./ffmpeg.ts";
+import { extractFrames, extractSingleFrame, extractAudio, thumbnail } from "./ffmpeg.ts";
 import { generateImage } from "./imagen.ts";
 import { generateMusic } from "./lyria.ts";
 import { generateVideo, generateTransitionVideo, extendVideo, generateVideoFromFrame } from "./veo.ts";
 import { probe } from "./ffmpeg.ts";
+import { transcribe as groqTranscribe } from "./groq-stt.ts";
 
 const ASSETS_DIR = join(import.meta.dir, "../../assets");
 
@@ -211,6 +212,20 @@ export const toolDeclarations: FunctionDeclaration[] = [
     parameters: {
       type: Type.OBJECT,
       properties: {},
+    },
+  },
+  {
+    name: "transcribe_clip",
+    description:
+      "Transcribe speech from a video/audio clip using Groq Whisper STT. Returns accurate word-level timestamps for use with add_captions. Use this instead of relying on analyze_segment for speech transcription.",
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        clipId: { type: Type.STRING, description: "ID of the clip to transcribe" },
+        startMs: { type: Type.NUMBER, description: "Start of segment in ms (relative to clip media, optional)" },
+        endMs: { type: Type.NUMBER, description: "End of segment in ms (relative to clip media, optional)" },
+      },
+      required: ["clipId"],
     },
   },
 ];
@@ -912,7 +927,7 @@ Respond as JSON: { "sceneDescription": "...", "transcript": "...", "mood": "..."
       }
 
       steps.push(
-        "Step 1: ANALYZE — Call analyze_segment on each video clip to understand the content. Use the full duration of each clip.",
+        "Step 1: ANALYZE — Call analyze_segment on each video clip to understand the visual content (scene, mood, composition). Use the full duration of each clip. Do NOT rely on its transcript for captions — use transcribe_clip in Step 5 instead.",
       );
       steps.push(
         "Step 2: EDIT — Based on the analysis, create smart cuts. Remove silent or uninteresting sections using ripple_delete after splitting. Keep the most visually interesting segments.",
@@ -924,7 +939,7 @@ Respond as JSON: { "sceneDescription": "...", "transcript": "...", "mood": "..."
         "Step 4: TITLE CARD — Call generate_and_insert_image to create a title card. Insert it at the beginning (startMs: 0) with insertOnTimeline: true.",
       );
       steps.push(
-        "Step 5: CAPTIONS — Add captions based on the transcript discovered during analysis using apply_timeline_diff with add_captions ops.",
+        "Step 5: CAPTIONS — Call transcribe_clip on each video clip to get accurate word-level transcripts via Whisper STT. Then create add_captions ops from the returned words, grouping into 3-6 word caption chunks.",
       );
 
       return {
@@ -937,6 +952,59 @@ Respond as JSON: { "sceneDescription": "...", "transcript": "...", "mood": "..."
         })),
         projectDurationMs: state.durationMs,
       };
+    }
+
+    case "transcribe_clip": {
+      const { clipId, startMs: segStartMs, endMs: segEndMs } = args as {
+        clipId: string;
+        startMs?: number;
+        endMs?: number;
+      };
+      console.log(T, `transcribe_clip: clip=${clipId} range=${segStartMs ?? "start"}-${segEndMs ?? "end"}ms`);
+      const state = store.getState();
+      let clip = null;
+      for (const track of state.tracks) {
+        clip = track.clips.find((c) => c.id === clipId);
+        if (clip) break;
+      }
+      if (!clip) return { error: `Clip ${clipId} not found` };
+
+      const asset = state.assets.find((a) => a.id === clip!.assetId);
+      if (!asset) return { error: `Asset for clip ${clipId} not found` };
+
+      const assetPath = asset.path.startsWith("/assets/")
+        ? join(ASSETS_DIR, asset.path.slice(8))
+        : asset.path;
+
+      try {
+        const audioStart = segStartMs ?? clip.inPointMs;
+        const audioEnd = segEndMs ?? (clip.inPointMs + clip.durationMs);
+        console.log(T, `  extracting audio ${audioStart}-${audioEnd}ms from ${assetPath}`);
+        const audioBuffer = await extractAudio(assetPath, audioStart, audioEnd);
+        console.log(T, `  audio extracted (${(audioBuffer.length / 1024).toFixed(0)}KB), sending to Groq Whisper`);
+
+        const result = await groqTranscribe(audioBuffer);
+        console.log(T, `  transcription complete: ${result.words.length} words`);
+
+        const timelineOffset = clip.startMs - clip.inPointMs + audioStart;
+        const adjustedWords = result.words.map((w) => ({
+          text: w.text,
+          fromMs: w.fromMs + timelineOffset,
+          toMs: w.toMs + timelineOffset,
+        }));
+
+        return {
+          clipId,
+          transcript: result.transcript,
+          words: adjustedWords,
+          wordCount: adjustedWords.length,
+        };
+      } catch (e) {
+        return {
+          clipId,
+          error: `Transcription failed: ${(e as Error).message}`,
+        };
+      }
     }
 
     default:

@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/button";
 import { useChatStore } from "@/stores/chat-store";
 import { ArrowUp } from "lucide-react";
 
@@ -18,22 +17,21 @@ export function ChatInput() {
 
   return (
     <form onSubmit={handleSubmit} className="p-3">
-      <div className="flex items-center gap-2 rounded-full bg-surface-highest pl-4 pr-1.5 py-1.5">
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-surface-high px-3 py-2 focus-within:border-outline transition-colors duration-150">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Describe your edit..."
           disabled={isStreaming}
-          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none disabled:opacity-50"
+          className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 outline-none disabled:opacity-50"
         />
-        <Button
+        <button
           type="submit"
-          size="icon"
           disabled={isStreaming || !text.trim()}
-          className="h-8 w-8 shrink-0 rounded-full bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-30"
+          className="h-6 w-6 shrink-0 flex items-center justify-center rounded-md bg-primary text-primary-foreground disabled:opacity-30 hover:bg-primary/90 active:bg-primary/80 transition-colors duration-100"
         >
-          <ArrowUp className="h-4 w-4" />
-        </Button>
+          <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />
+        </button>
       </div>
     </form>
   );

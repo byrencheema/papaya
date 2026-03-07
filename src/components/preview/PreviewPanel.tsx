@@ -19,8 +19,6 @@ export function PreviewPanel({ playback }: PreviewPanelProps) {
           <VideoPlayer
             project={project}
             currentTimeMs={playback.currentTimeMs}
-            videoRef={playback.videoRef}
-            audioRef={playback.audioRef}
             isPlaying={playback.isPlaying}
           />
           {previewDiff && <DiffOverlay />}

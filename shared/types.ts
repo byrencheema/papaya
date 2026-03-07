@@ -209,9 +209,9 @@ export const DEFAULT_CAPTION_STYLE: CaptionStyle = {
   fontFamily: "'Inter', system-ui, sans-serif",
   fontSize: 48,
   color: "#FFFFFF",
-  highlightColor: "#FFD700",
+  highlightColor: "#FFFFFF",
   strokeColor: "#000000",
-  strokeWidth: 3,
+  strokeWidth: 5,
   position: "bottom",
 };
 

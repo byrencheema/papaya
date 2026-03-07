@@ -1,14 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useProjectStore } from "@/stores/project-store";
-import { Upload } from "lucide-react";
+import { Film, Music, ImageIcon } from "lucide-react";
 
 interface ImportDialogProps {
   open: boolean;
@@ -19,6 +15,7 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
   const importAsset = useProjectStore((s) => s.importAsset);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFiles(files: FileList | null) {
@@ -38,25 +35,45 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
     onOpenChange(false);
   }
 
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  }, []);
+
+  const onDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+  }, []);
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    handleFiles(e.dataTransfer.files);
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Import Media</DialogTitle>
-          <DialogDescription>
-            Select video, audio, or image files to import into your project.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-sm p-0 overflow-hidden border-0 bg-transparent shadow-none">
         <div
-          className="flex flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-outline-variant p-10 cursor-pointer hover:border-primary/60 hover:bg-primary/5 transition-colors duration-200"
+          className={`flex flex-col items-center gap-5 p-8 cursor-pointer transition-all duration-150 bg-surface-high border border-outline-variant rounded-lg ${dragging ? "border-primary bg-primary/5 scale-[1.02]" : "hover:border-primary/40"}`}
           onClick={() => inputRef.current?.click()}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
         >
-          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Upload className="h-5 w-5 text-primary" />
+          <div className="flex gap-3 text-muted-foreground/40">
+            <Film className="h-5 w-5" />
+            <Music className="h-5 w-5" />
+            <ImageIcon className="h-5 w-5" />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Click to select files
-          </p>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm font-medium text-foreground">
+              {dragging ? "Drop files" : "Drop files here"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              or click to browse
+            </p>
+          </div>
           <input
             ref={inputRef}
             type="file"
@@ -65,22 +82,17 @@ export function ImportDialog({ open, onOpenChange }: ImportDialogProps) {
             className="hidden"
             onChange={(e) => handleFiles(e.target.files)}
           />
-        </div>
-        {uploading && (
-          <div className="flex items-center gap-3">
-            <div className="h-1 flex-1 rounded-full bg-surface-highest overflow-hidden">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
+          {uploading && (
+            <div className="w-full flex items-center gap-3">
+              <div className="h-0.5 flex-1 bg-surface-highest overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-xs text-muted-foreground tabular-nums">{progress}%</span>
             </div>
-            <span className="text-xs text-muted-foreground tabular-nums">{progress}%</span>
-          </div>
-        )}
-        <div className="flex justify-end">
-          <Button variant="outline" className="rounded-full" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

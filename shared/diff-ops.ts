@@ -89,6 +89,9 @@ export function applyOp(state: ProjectState, op: DiffOp): ProjectState {
       const found = findClip(s, op.clipId);
       if (!found) break;
       const { track: srcTrack, clip, index } = found;
+      const oldStart = clip.startMs;
+      const oldEnd = clip.startMs + clip.durationMs;
+      const delta = op.toStartMs - oldStart;
       srcTrack.clips.splice(index, 1);
       const destTrack = findTrack(s, op.toTrackId);
       if (!destTrack) break;
@@ -96,6 +99,20 @@ export function applyOp(state: ProjectState, op: DiffOp): ProjectState {
       clip.startMs = op.toStartMs;
       destTrack.clips.push(clip);
       destTrack.clips.sort((a, b) => a.startMs - b.startMs);
+      if (delta !== 0) {
+        for (const cap of s.captions) {
+          const capEnd = cap.startMs + cap.durationMs;
+          if (cap.startMs >= oldStart && capEnd <= oldEnd) {
+            cap.startMs += delta;
+            if (cap.words) {
+              for (const w of cap.words) {
+                w.fromMs += delta;
+                w.toMs += delta;
+              }
+            }
+          }
+        }
+      }
       break;
     }
 

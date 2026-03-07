@@ -16,6 +16,11 @@ const app = new Hono();
 const ASSETS_DIR = join(import.meta.dir, "../assets");
 
 app.use("*", cors());
+app.use("*", async (c, next) => {
+  await next();
+  c.header("Cross-Origin-Opener-Policy", "same-origin");
+  c.header("Cross-Origin-Embedder-Policy", "credentialless");
+});
 
 app.route("/", projectRoutes);
 app.route("/", assetsRoutes);

@@ -4,56 +4,56 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --color-background: #141218;
-  --color-foreground: #E6E0E9;
-  --color-card: #211F26;
-  --color-card-foreground: #E6E0E9;
-  --color-popover: #2B2930;
-  --color-popover-foreground: #E6E0E9;
-  --color-primary: #D0BCFF;
-  --color-primary-foreground: #381E72;
-  --color-secondary: #4A4458;
-  --color-secondary-foreground: #E8DEF8;
-  --color-muted: #36343B;
-  --color-muted-foreground: #CAC4D0;
-  --color-accent: #4A4458;
-  --color-accent-foreground: #E8DEF8;
-  --color-destructive: #F2B8B5;
-  --color-destructive-foreground: #601410;
-  --color-border: #49454F;
-  --color-input: #49454F;
-  --color-ring: #D0BCFF;
+  --color-background: #0C0C0C;
+  --color-foreground: #FAFAF9;
+  --color-card: #161616;
+  --color-card-foreground: #FAFAF9;
+  --color-popover: #1C1C1C;
+  --color-popover-foreground: #FAFAF9;
+  --color-primary: #D946EF;
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: #262626;
+  --color-secondary-foreground: #FAFAF9;
+  --color-muted: #1C1C1C;
+  --color-muted-foreground: #737373;
+  --color-accent: #262626;
+  --color-accent-foreground: #FAFAF9;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
+  --color-border: #262626;
+  --color-input: #262626;
+  --color-ring: #D946EF;
 
-  --color-surface-lowest: #0F0D13;
-  --color-surface-low: #1D1B20;
-  --color-surface: #211F26;
-  --color-surface-high: #2B2930;
-  --color-surface-highest: #36343B;
+  --color-surface-lowest: #080808;
+  --color-surface-low: #111111;
+  --color-surface: #161616;
+  --color-surface-high: #1C1C1C;
+  --color-surface-highest: #262626;
 
-  --color-tertiary: #EFB8C8;
-  --color-tertiary-foreground: #492532;
-  --color-on-surface-variant: #CAC4D0;
-  --color-outline: #938F99;
-  --color-outline-variant: #49454F;
+  --color-tertiary: #E879F9;
+  --color-tertiary-foreground: #FFFFFF;
+  --color-on-surface-variant: #737373;
+  --color-outline: #404040;
+  --color-outline-variant: #262626;
 
-  --color-success: #A8DAB5;
-  --color-success-foreground: #0D3B1C;
+  --color-success: #22C55E;
+  --color-success-foreground: #FFFFFF;
 
-  --color-chart-1: #D0BCFF;
-  --color-chart-2: #A8DAB5;
-  --color-chart-3: #7DC4E4;
-  --color-chart-4: #EFB8C8;
-  --color-chart-5: #F2D679;
-  --color-sidebar: #0F0D13;
-  --color-sidebar-foreground: #E6E0E9;
-  --color-sidebar-primary: #D0BCFF;
-  --color-sidebar-primary-foreground: #381E72;
-  --color-sidebar-accent: #4A4458;
-  --color-sidebar-accent-foreground: #E8DEF8;
-  --color-sidebar-border: #49454F;
-  --color-sidebar-ring: #D0BCFF;
+  --color-chart-1: #D946EF;
+  --color-chart-2: #22C55E;
+  --color-chart-3: #38BDF8;
+  --color-chart-4: #E879F9;
+  --color-chart-5: #A78BFA;
+  --color-sidebar: #080808;
+  --color-sidebar-foreground: #FAFAF9;
+  --color-sidebar-primary: #D946EF;
+  --color-sidebar-primary-foreground: #FFFFFF;
+  --color-sidebar-accent: #262626;
+  --color-sidebar-accent-foreground: #FAFAF9;
+  --color-sidebar-border: #262626;
+  --color-sidebar-ring: #D946EF;
 
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-standard-decel: cubic-bezier(0, 0, 0, 1);
@@ -72,9 +72,9 @@
   --duration-long1: 450ms;
   --duration-long2: 500ms;
 
-  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
-  --shadow-2: 0 1px 2px 0 rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
-  --shadow-3: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+  --shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.4), 0 1px 3px 1px rgb(0 0 0 / 0.2);
+  --shadow-2: 0 1px 2px 0 rgb(0 0 0 / 0.4), 0 2px 6px 2px rgb(0 0 0 / 0.2);
+  --shadow-3: 0 1px 3px 0 rgb(0 0 0 / 0.4), 0 4px 8px 3px rgb(0 0 0 / 0.2);
 }
 
 @font-face {
@@ -93,4 +93,14 @@ body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
 }

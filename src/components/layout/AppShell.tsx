@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 export function AppShell() {
   const { project, loading } = useProject();
-  const playback = usePlayback(project?.durationMs ?? 0, project ?? null);
+  const playback = usePlayback(project?.durationMs ?? 0);
   const [exportOpen, setExportOpen] = useState(false);
   const [binCollapsed, setBinCollapsed] = useState(false);
   const playbackRef = useRef(playback);
@@ -24,18 +24,18 @@ export function AppShell() {
 
   if (loading && !project) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-surface-lowest text-foreground">
+      <div className="flex h-screen w-screen items-center justify-center bg-background text-foreground">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-primary border-t-transparent" />
-          <p className="text-sm text-muted-foreground">Loading project...</p>
+          <div className="h-6 w-6 bg-primary" style={{ animation: "brutal-pulse 0.8s ease-in-out infinite" }} />
+          <p className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">loading project...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-lowest text-foreground">
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-outline-variant px-4 bg-surface-low">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
+      <header className="flex h-12 shrink-0 items-center justify-between border-b-2 border-outline-variant px-4 bg-surface-low">
         <div className="flex items-center gap-3 min-w-0">
           <Button
             variant="ghost"
@@ -45,31 +45,34 @@ export function AppShell() {
           >
             {binCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </Button>
-          <span className="text-sm font-semibold tracking-tight text-foreground truncate">
-            {project?.name ?? "Papaya"}
+          <span className="font-mono text-sm font-bold tracking-tight text-primary lowercase">
+            papaya
+          </span>
+          <span className="text-[10px] font-mono text-muted-foreground truncate lowercase">
+            {project?.name && project.name.toLowerCase() !== "papaya" ? `/ ${project.name}` : ""}
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Button
             variant="secondary"
             size="sm"
-            className="h-8 gap-2 rounded-full px-4"
+            className="h-8 gap-2 px-4"
             onClick={() => {
               const { sendMessage, isStreaming } = useChatStore.getState();
               if (!isStreaming) sendMessage("Auto edit this video: analyze all clips, make smart cuts, add a soundtrack, and create a title card.");
             }}
           >
             <Wand2 className="h-3.5 w-3.5" />
-            Auto Edit
+            auto edit
           </Button>
           <Button
             variant="outline"
             size="sm"
-            className="h-8 gap-2 rounded-full px-4"
+            className="h-8 gap-2 px-4"
             onClick={() => setExportOpen(true)}
           >
             <Download className="h-3.5 w-3.5" />
-            Export
+            export
           </Button>
         </div>
       </header>
@@ -77,7 +80,7 @@ export function AppShell() {
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <div
           className={cn(
-            "shrink-0 border-r border-outline-variant bg-surface-low transition-all duration-300 overflow-hidden",
+            "shrink-0 border-r-2 border-outline-variant bg-surface-low transition-all duration-300 overflow-hidden",
             binCollapsed ? "w-0 border-r-0" : "w-[240px]"
           )}
           style={{ transitionTimingFunction: "var(--ease-emphasized-decel)" }}
@@ -87,16 +90,16 @@ export function AppShell() {
           </div>
         </div>
 
-        <div className="flex-1 min-w-0 overflow-hidden bg-surface-lowest">
+        <div className="flex-1 min-w-0 overflow-hidden bg-background">
           <PreviewPanel playback={playback} />
         </div>
 
-        <div className="w-[380px] shrink-0 border-l border-outline-variant bg-surface-low overflow-hidden">
+        <div className="w-[380px] shrink-0 border-l-2 border-outline-variant bg-surface-low overflow-hidden">
           <ChatPanel />
         </div>
       </div>
 
-      <div className="h-[180px] shrink-0 border-t border-outline-variant bg-surface-low overflow-hidden">
+      <div className="h-[180px] shrink-0 border-t-2 border-outline-variant bg-surface-low overflow-hidden">
         <TimelinePanel playback={playback} />
       </div>
 

@@ -14,14 +14,14 @@ export function Toasts() {
         <div
           key={toast.id}
           className={cn(
-            "pointer-events-auto rounded-xl px-4 py-3 text-sm shadow-[var(--shadow-2)] animate-in slide-in-from-bottom-2 fade-in",
-            toast.variant === "error" && "bg-destructive text-destructive-foreground",
-            toast.variant === "success" && "bg-success text-success-foreground",
-            toast.variant === "default" && "bg-surface-highest text-foreground",
+            "pointer-events-auto border-2 px-4 py-3 text-xs font-mono font-semibold uppercase tracking-wide shadow-[var(--shadow-2)] animate-in slide-in-from-bottom-2 fade-in",
+            toast.variant === "error" && "bg-destructive text-destructive-foreground border-destructive",
+            toast.variant === "success" && "bg-success text-success-foreground border-success",
+            toast.variant === "default" && "bg-surface-highest text-foreground border-outline-variant",
           )}
         >
           <div className="flex items-center justify-between gap-3">
-            <span className="font-medium">{toast.message}</span>
+            <span>{toast.message}</span>
             <button
               className="opacity-70 hover:opacity-100 transition-opacity"
               onClick={() => removeToast(toast.id)}

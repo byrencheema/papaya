@@ -22,6 +22,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@diffusionstudio/core": "^4.0.3",
     "@google/genai": "^1.43.0",
     "@hono/node-server": "^1.19.10",
     "@radix-ui/react-context-menu": "^2.2.16",
