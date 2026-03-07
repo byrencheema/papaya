@@ -37,11 +37,11 @@ app.post("/api/export", async (c) => {
 
     if (asset.type === "image") {
       filterParts.push(
-        `[${inputIdx}:v]loop=loop=-1:size=1:start=0,setpts=PTS-STARTPTS,trim=0:${(clip.durationMs / 1000).toFixed(3)},setpts=PTS-STARTPTS,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2[v${inputIdx}]`
+        `[${inputIdx}:v]loop=loop=-1:size=1:start=0,setpts=PTS-STARTPTS,trim=0:${(clip.durationMs / 1000).toFixed(3)},setpts=PTS-STARTPTS,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1[v${inputIdx}]`
       );
     } else {
       filterParts.push(
-        `[${inputIdx}:v]trim=${inSec}:${outSec},setpts=PTS-STARTPTS,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2[v${inputIdx}]`
+        `[${inputIdx}:v]trim=${inSec}:${outSec},setpts=PTS-STARTPTS,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1[v${inputIdx}]`
       );
     }
     inputIdx++;

@@ -16,6 +16,7 @@ export async function generateImage(
 ): Promise<string> {
   const client = getClient();
 
+  const aspectHint = "Generate this image in 9:16 portrait aspect ratio (1080x1920).";
   const parts: Array<Record<string, unknown>> = [];
   if (referenceImages?.length) {
     for (const img of referenceImages) {
@@ -26,9 +27,9 @@ export async function generateImage(
         },
       });
     }
-    parts.push({ text: `Use these frames from the current video as visual reference for style, colors, and content.\n\n${prompt}` });
+    parts.push({ text: `Use these frames from the current video as visual reference for style, colors, and content.\n\n${aspectHint}\n\n${prompt}` });
   } else {
-    parts.push({ text: prompt });
+    parts.push({ text: `${aspectHint}\n\n${prompt}` });
   }
 
   const response = await client.models.generateContent({
