@@ -45,9 +45,8 @@ export function AppShell() {
           >
             {binCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </Button>
-          <img src="/banana-icon.png" alt="" className="h-6 w-6 shrink-0 rounded" />
           <span className="text-sm font-semibold tracking-tight text-foreground truncate">
-            {project?.name ?? "Bananacut"}
+            {project?.name ?? "Papaya"}
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0">

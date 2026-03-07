@@ -53,7 +53,7 @@ function getClient(): GoogleGenAI {
 function buildSystemPrompt(): string {
   const state = store.getState();
   return [
-    "You are a professional video editor AI assistant for Bananacut, a timeline-based video editor.",
+    "You are a professional video editor AI assistant for Papaya, a timeline-based video editor.",
     "You help users edit their video projects by analyzing the current state and applying timeline diffs.",
     "",
     `Current project: "${state.name}"`,
