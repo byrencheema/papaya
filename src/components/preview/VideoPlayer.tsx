@@ -10,10 +10,13 @@ interface VideoPlayerProps {
 
 export function VideoPlayer({ project }: VideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mountedRef = useRef(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const el = containerRef.current;
-    if (!el) return;
+    if (!el || mountedRef.current) return;
+    mountedRef.current = true;
     compositionManager.mount(el);
     const canvas = el.querySelector("canvas");
     if (canvas) {
@@ -21,12 +24,21 @@ export function VideoPlayer({ project }: VideoPlayerProps) {
       canvas.style.height = "100%";
       canvas.style.objectFit = "contain";
     }
-    return () => compositionManager.unmount();
+    return () => {
+      mountedRef.current = false;
+      compositionManager.unmount();
+    };
   }, []);
 
   useEffect(() => {
     if (!project) return;
-    compositionManager.syncFromProject(project);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      compositionManager.syncFromProject(project);
+    }, 100);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [project]);
 
   return (

@@ -85,17 +85,7 @@ class CompositionManager {
     this._syncedProjectHash = hash;
 
     const totalClips = project.tracks.reduce((s, t) => s + t.clips.length, 0);
-    log("sync START", {
-      durationMs: project.durationMs,
-      tracks: project.tracks.length,
-      clips: totalClips,
-      captions: project.captions.length,
-      assets: project.assets.length,
-      clipDetails: project.tracks.flatMap((t) =>
-        t.clips.map((c) => ({ id: c.id.slice(0, 8), asset: c.assetId.slice(0, 8), start: c.startMs, dur: c.durationMs, track: t.id }))
-      ),
-    });
-    log("sync triggered from:", new Error().stack?.split("\n").slice(1, 4).join(" <- "));
+    log("sync START", { clips: totalClips, captions: project.captions.length });
 
     try {
       const wasPlaying = this.composition.playing;
@@ -143,8 +133,8 @@ class CompositionManager {
                   height: "100%",
                 });
                 await layer.add(vidClip);
-                vidClip.delay = `${clip.startMs}ms`;
                 vidClip.trim(`${clip.inPointMs}ms`, `${clip.outPointMs}ms`);
+                vidClip.delay = `${clip.startMs}ms`;
                 log("  ✓ video added", { delay: vidClip.delay, duration: vidClip.duration, end: vidClip.end });
               } catch (e) {
                 err("  ✗ video failed", asset.path, e);
@@ -167,8 +157,8 @@ class CompositionManager {
               const source = await Source.from(asset.path);
               const audioClip = new AudioClip(source as any);
               await layer.add(audioClip);
-              audioClip.delay = `${clip.startMs}ms`;
               audioClip.trim(`${clip.inPointMs}ms`, `${clip.outPointMs}ms`);
+              audioClip.delay = `${clip.startMs}ms`;
               log("  ✓ audio added", { delay: audioClip.delay, duration: audioClip.duration, end: audioClip.end });
             } catch (e) {
               err("  ✗ audio failed", asset.path, e);
@@ -182,21 +172,7 @@ class CompositionManager {
         await this.addCaptions(project.captions, project.captionStyle);
       }
 
-      log("composition duration after rebuild:", this.composition.duration, "s");
-      log("layers:", this.composition.layers.length);
-      for (const [i, layer] of this.composition.layers.entries()) {
-        const clips = (layer as any).clips ?? [];
-        for (const c of clips) {
-          log(`  layer[${i}] clip:`, {
-            type: c.constructor?.name,
-            delay: c.delay,
-            duration: c.duration,
-            start: c.start,
-            end: c.end,
-            range: c.range,
-          });
-        }
-      }
+      log("sync rebuilt — duration:", this.composition.duration, "s, layers:", this.composition.layers.length);
 
       await this.composition.seek(`${currentTime}s`);
       log("seeked to", currentTime, "s");

@@ -206,7 +206,7 @@ export interface SSEEvent {
 }
 
 export const DEFAULT_CAPTION_STYLE: CaptionStyle = {
-  fontFamily: "'Inter', system-ui, sans-serif",
+  fontFamily: "Arial",
   fontSize: 48,
   color: "#FFFFFF",
   highlightColor: "#FFFFFF",
