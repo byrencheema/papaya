@@ -22,9 +22,7 @@ export function ChatPanel() {
         <div className="flex flex-col gap-3 px-4 py-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center gap-3 px-4 text-center" style={{ marginTop: "55%" }}>
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-base font-semibold leading-none">p</span>
-              </div>
+              <img src="/papaya-logo.png" alt="papaya" className="h-10 w-10 object-contain" />
               <p className="text-sm text-muted-foreground leading-relaxed">
                 Describe changes to your timeline.
               </p>

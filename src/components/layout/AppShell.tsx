@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Download, Wand2, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Download, Wand2, PanelLeftClose, PanelLeftOpen, RotateCcw } from "lucide-react";
 import { BinPanel } from "@/components/bins/BinPanel";
 import { PreviewPanel } from "@/components/preview/PreviewPanel";
 import { ChatPanel } from "@/components/chat/ChatPanel";
@@ -11,6 +11,7 @@ import { useProject } from "@/hooks/use-project";
 import { usePlayback } from "@/hooks/use-playback";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useChatStore } from "@/stores/chat-store";
+import { useProjectStore } from "@/stores/project-store";
 import { cn } from "@/lib/utils";
 
 export function AppShell() {
@@ -54,6 +55,18 @@ export function AppShell() {
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 gap-2 px-3 text-muted-foreground"
+            onClick={() => {
+              useProjectStore.getState().resetProject();
+              useChatStore.getState().clearMessages();
+            }}
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            reset
+          </Button>
           <Button
             variant="secondary"
             size="sm"

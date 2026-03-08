@@ -10,6 +10,7 @@ interface ProjectStore {
   previewDiff: TimelineDiff | null;
 
   fetchProject: () => Promise<void>;
+  resetProject: () => Promise<void>;
   importAsset: (file: File) => Promise<void>;
   applyDiffToProject: (diff: TimelineDiff) => Promise<void>;
   applyDiffLocally: (diff: TimelineDiff) => void;
@@ -33,6 +34,18 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       if (!res.ok) throw new Error("Failed to fetch project");
       const project = (await res.json()) as ProjectState;
       set({ project, loading: false });
+    } catch (e) {
+      set({ error: (e as Error).message, loading: false });
+    }
+  },
+
+  resetProject: async () => {
+    set({ loading: true, error: null });
+    try {
+      const res = await fetch("/api/project/reset", { method: "POST" });
+      if (!res.ok) throw new Error("Failed to reset project");
+      const project = (await res.json()) as ProjectState;
+      set({ project, loading: false, selectedClipId: null, previewDiff: null });
     } catch (e) {
       set({ error: (e as Error).message, loading: false });
     }
