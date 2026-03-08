@@ -51,7 +51,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
     : cleanContent(message.content, hasDiff);
 
   return (
-    <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex gap-2", isUser ? "justify-end" : "justify-start")}>
+      {!isUser && (
+        <img src="/papaya-logo.png" alt="" className="h-6 w-6 object-contain shrink-0 mt-1" />
+      )}
       <div
         className={cn(
           "max-w-[88%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed",

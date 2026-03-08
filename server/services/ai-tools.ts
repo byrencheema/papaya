@@ -228,6 +228,24 @@ export const toolDeclarations: FunctionDeclaration[] = [
       required: ["clipId"],
     },
   },
+  {
+    name: "apply_ffmpeg",
+    description:
+      "Run an FFmpeg command on a clip's asset file to apply video/audio effects (speed, reverse, color grading, filters, etc). The command replaces the asset file in-place. Provide the ffmpeg args as an array — the input file (-i) and output are handled automatically. Example args for 2x speed: [\"-filter:v\", \"setpts=0.5*PTS\", \"-filter:a\", \"atempo=2.0\"]. Example for reverse: [\"-vf\", \"reverse\", \"-af\", \"areverse\"]. Always re-encode with [\"-c:v\", \"libx264\", \"-preset\", \"fast\"] unless you have a reason not to.",
+    parameters: {
+      type: Type.OBJECT,
+      properties: {
+        clipId: { type: Type.STRING, description: "ID of the clip whose asset to process" },
+        ffmpegArgs: {
+          type: Type.ARRAY,
+          description: "FFmpeg arguments (filters, codecs, etc). Input/output files are added automatically.",
+          items: { type: Type.STRING },
+        },
+        description: { type: Type.STRING, description: "What this FFmpeg operation does (shown to user)" },
+      },
+      required: ["clipId", "ffmpegArgs"],
+    },
+  },
 ];
 
 export async function executeToolCall(name: string, args: Record<string, unknown>): Promise<Record<string, unknown>> {
@@ -909,6 +927,62 @@ Respond as JSON: { "sceneDescription": "...", "transcript": "...", "mood": "..."
         resultingClips: finalState.tracks.find((t) => t.id === trkId)?.clips
           .slice().sort((a, b) => a.startMs - b.startMs)
           .map((c, i) => ({ clipNumber: i + 1, id: c.id, startMs: c.startMs, durationMs: c.durationMs })),
+      };
+    }
+
+    case "apply_ffmpeg": {
+      const { clipId: ffClipId, ffmpegArgs: rawArgs, description: ffDesc } = args as {
+        clipId: string;
+        ffmpegArgs: string[];
+        description?: string;
+      };
+      console.log(T, `apply_ffmpeg: clip=${ffClipId} ${ffDesc ?? ""}`);
+
+      const state = store.getState();
+      let foundClip: any = null;
+      for (const track of state.tracks) {
+        const c = track.clips.find((cl) => cl.id === ffClipId);
+        if (c) { foundClip = c; break; }
+      }
+      if (!foundClip) return { error: `Clip ${ffClipId} not found` };
+
+      const asset = state.assets.find((a) => a.id === foundClip.assetId);
+      if (!asset) return { error: `Asset not found for clip ${ffClipId}` };
+
+      const resolvePath = (p: string) => p.startsWith("/assets/") ? join(ASSETS_DIR, p.slice(8)) : p;
+      const inputPath = resolvePath(asset.path);
+      const tmpOutput = join(ASSETS_DIR, `ffmpeg_tmp_${uuid()}.mp4`);
+
+      const cmdArgs = ["ffmpeg", "-y", "-i", inputPath, ...rawArgs, tmpOutput];
+      console.log(T, `  cmd: ${cmdArgs.join(" ")}`);
+
+      const proc = Bun.spawn(cmdArgs, { stdout: "pipe", stderr: "pipe" });
+      const stderrText = await new Response(proc.stderr).text();
+      const exitCode = await proc.exited;
+
+      if (exitCode !== 0) {
+        try { await Bun.file(tmpOutput).exists() && (await import("fs")).unlinkSync(tmpOutput); } catch {}
+        return { error: `FFmpeg failed (exit ${exitCode}): ${stderrText.slice(-300)}` };
+      }
+
+      const { unlinkSync, renameSync } = await import("fs");
+      try { unlinkSync(inputPath); } catch {}
+      renameSync(tmpOutput, inputPath);
+
+      let newDurationMs = asset.durationMs ?? 0;
+      try {
+        const probed = await probe(inputPath);
+        newDurationMs = probed.durationMs;
+      } catch {}
+
+      store.updateAssetDuration(asset.id, newDurationMs);
+
+      console.log(T, `  done — new duration: ${newDurationMs}ms`);
+      return {
+        success: true,
+        description: ffDesc ?? "FFmpeg applied",
+        newDurationMs,
+        assetId: asset.id,
       };
     }
 

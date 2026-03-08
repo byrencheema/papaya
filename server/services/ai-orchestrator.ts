@@ -116,6 +116,7 @@ function buildSystemPrompt(): string {
     "  Use when users say things like 'extend clip 2', 'make clip 1 longer', 'add more to the end'.",
     "- generate_and_place_audio: Generate background music/soundtrack matching the video mood. Automatically places on the audio track.",
     "- transcribe_clip: Transcribe speech from a clip using Groq Whisper STT. Returns accurate word-level timestamps. Use this for captions instead of relying on analyze_segment's estimated transcript.",
+    "- apply_ffmpeg: Run FFmpeg on a clip's asset file for effects like speed change, reverse, color grading, filters, etc. Provide ffmpegArgs as an array of strings. Input/output are handled automatically. Always include [\"-c:v\", \"libx264\", \"-preset\", \"fast\"] for re-encoding. The asset file is replaced in-place and duration updated. After calling this, call get_project_state to update clip durations if needed, then apply_timeline_diff to adjust timeline.",
     "- auto_edit: One-click automatic editing. Chains analysis → smart cuts → soundtrack → title card → captions. Follow the returned instructions step by step.",
     "",
     "AUTO EDIT GUIDANCE: When auto_edit is called, follow each step in the returned instructions carefully.",

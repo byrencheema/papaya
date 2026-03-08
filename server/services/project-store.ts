@@ -22,6 +22,14 @@ export function addAsset(asset: Asset): void {
   };
 }
 
+export function updateAssetDuration(assetId: string, durationMs: number): void {
+  state = {
+    ...state,
+    assets: state.assets.map((a) => a.id === assetId ? { ...a, durationMs } : a),
+    updatedAt: Date.now(),
+  };
+}
+
 export function addCommit(diff: TimelineDiff, source: CommitSource): Commit {
   const snapshotBefore = JSON.stringify(state);
   state = applyDiff(state, diff);

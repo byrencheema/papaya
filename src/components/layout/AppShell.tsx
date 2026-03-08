@@ -45,6 +45,7 @@ export function AppShell() {
           >
             {binCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
           </Button>
+          <img src="/papaya-logo.png" alt="papaya" className="h-7 w-7 object-contain" />
           <span className="font-mono text-sm font-bold tracking-tight text-primary lowercase">
             papaya
           </span>
